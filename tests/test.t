@@ -1,0 +1,3 @@
+  $ true
+  $ echo 'foo'
+  foo
