@@ -4,4 +4,7 @@ test:
 shellcheck:
 	shellcheck cram.sh
 
-.PHONY: test shellcheck
+fmt:
+	shfmt -w cram.sh
+
+.PHONY: test shellcheck fmt
