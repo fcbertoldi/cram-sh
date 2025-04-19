@@ -1,7 +1,7 @@
 test:
-	cram test.t
+	./cram.sh test.t
 
 shellcheck:
-	shellcheck cram
+	shellcheck cram.sh
 
 .PHONY: test shellcheck
