@@ -38,6 +38,11 @@ compare_outputs() {
 	fi
 }
 
+exec_cmd() {
+	output=$(eval "$cmd")
+	#printf "\$output: $output \n"
+}
+
 while getopts ":h-" opt; do
 	case "$opt" in
 	h)
@@ -77,7 +82,7 @@ while IFS= read -r line; do
 	if echo "$line" | grep -E '^  \$' >/dev/null; then
 
 		if [ -n "$cmd_build" ]; then
-			output=$(eval "$cmd")
+			exec_cmd
 		fi
 
 		if [ -n "$expected_output" ]; then
@@ -94,7 +99,7 @@ while IFS= read -r line; do
 	elif echo "$line" | grep -E '^  ' >/dev/null; then
 
 		if [ -n "$cmd_build" ]; then
-			output=$(eval "$cmd")
+			exec_cmd
 		fi
 
 		cmd_build=''
@@ -107,7 +112,7 @@ while IFS= read -r line; do
 	else
 
 		if [ -n "$cmd_build" ]; then
-			output=$(eval "$cmd")
+			exec_cmd
 		fi
 
 		if [ -n "$expected_output" ]; then
@@ -122,7 +127,7 @@ while IFS= read -r line; do
 done <"$1"
 
 if [ -n "$cmd_build" ]; then
-	output=$(eval "$cmd")
+	exec_cmd
 fi
 
 if [ -n "$expected_output" ]; then
