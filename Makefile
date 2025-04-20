@@ -1,5 +1,5 @@
 test:
-	./cram.sh test.t
+	./cram.sh tests/test.t
 
 shellcheck:
 	shellcheck cram.sh

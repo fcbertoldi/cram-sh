@@ -1,7 +1,7 @@
   $ true
   $ echo 'foo'
   foo
-  $ export BAR=BAR
+  $ BAR=bar
   $ echo "$BAR"
   bar
 
