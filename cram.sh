@@ -22,25 +22,15 @@ usage() {
 }
 
 compare_outputs() {
-	expected="$1"
-	actual="$2"
-
-	if [ "$expected" != "$actual" ]; then
+	if ! diff -q "$expected_output_file" "$output_file" > /dev/null; then
 		printf "Error: Output differs from expected\n" >&2
-		tmp_expected=$(mktemp)
-		tmp_actual=$(mktemp)
-
-		echo "$expected" >"$tmp_expected"
-		echo "$actual" >"$tmp_actual"
-		diff -u "$tmp_expected" "$tmp_actual"
-		rm -f "$tmp_expected" "$tmp_actual"
+		diff -u "$expected_output_file" "$output_file" >&2
 		exit 1
 	fi
 }
 
 exec_cmd() {
-	output=$(eval "$cmd")
-	#printf "\$output: $output \n"
+	eval "$cmd" > "$output_file"
 }
 
 while getopts ":h-" opt; do
@@ -76,7 +66,13 @@ if [ -z "$1" ]; then
 	exit 1
 fi
 
+output_file=$(mktemp)
+expected_output_file=$(mktemp)
+trap 'rm -f "$output_file" "$expected_output_file"' EXIT INT TERM
+
 cmd_build=''
+output_build=''
+
 while IFS= read -r line; do
 
 	if echo "$line" | grep -E '^  \$' >/dev/null; then
@@ -85,11 +81,11 @@ while IFS= read -r line; do
 			exec_cmd
 		fi
 
-		if [ -n "$expected_output" ]; then
-			compare_outputs "$expected_output" "$output"
+		if [ -n "$output_build" ]; then
+			compare_outputs
 		fi
 		cmd_build=1
-		expected_output=''
+		output_build=''
 		cmd="${line#  $ }"
 
 	elif echo "$line" | grep -E '^  >' >/dev/null; then
@@ -103,10 +99,11 @@ while IFS= read -r line; do
 		fi
 
 		cmd_build=''
-		if [ -z "$expected_output" ]; then
-			expected_output="${line#  }"
+		if [ -z "$output_build" ]; then
+			echo "${line#  }" >"$expected_output_file"
+			output_build=1
 		else
-			expected_output="$expected_output ${line#  }"
+			echo "${line#  }" >>"$expected_output_file"
 		fi
 
 	else
@@ -115,12 +112,12 @@ while IFS= read -r line; do
 			exec_cmd
 		fi
 
-		if [ -n "$expected_output" ]; then
-			compare_outputs "$expected_output" "$output"
+		if [ -n "$output_build" ]; then
+			compare_outputs
 		fi
 
 		cmd_build=''
-		expected_output=''
+		output_build=''
 
 	fi
 
@@ -131,5 +128,5 @@ if [ -n "$cmd_build" ]; then
 fi
 
 if [ -n "$expected_output" ]; then
-	compare_outputs "$expected_output" "$output"
+	compare_outputs
 fi
