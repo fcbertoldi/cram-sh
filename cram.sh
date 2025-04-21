@@ -22,7 +22,7 @@ usage() {
 }
 
 compare_outputs() {
-	if ! diff -q "$expected_output_file" "$output_file" > /dev/null; then
+	if ! diff -q "$expected_output_file" "$output_file" >/dev/null; then
 		printf "Error: Output differs from expected\n" >&2
 		diff -u "$expected_output_file" "$output_file" >&2
 		exit 1
@@ -30,7 +30,7 @@ compare_outputs() {
 }
 
 exec_cmd() {
-	eval "$cmd" > "$output_file"
+	eval "$cmd" >"$output_file"
 }
 
 while getopts ":h-" opt; do
