@@ -30,7 +30,7 @@ compare_outputs() {
 }
 
 exec_cmd() {
-	eval "$cmd" >"$output_file"
+	eval "$cmd" >"$output_file" 2>&1
 }
 
 while getopts ":h-" opt; do

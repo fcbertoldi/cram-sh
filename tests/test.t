@@ -1,7 +1,7 @@
   $ true
   $ echo 'foo'
-  bar
+  foo
   $ BAR=bar
-  $ echo "$BAR"
+  $ echo "$BAR" >&2
   bar
 
