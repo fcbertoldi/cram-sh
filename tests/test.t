@@ -1,6 +1,6 @@
   $ true
   $ echo 'foo'
-  foo
+  bar
   $ BAR=bar
   $ echo "$BAR"
   bar

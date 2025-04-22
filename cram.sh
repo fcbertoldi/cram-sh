@@ -23,8 +23,8 @@ usage() {
 
 compare_outputs() {
 	if ! diff -q "$expected_output_file" "$output_file" >/dev/null; then
-		printf "Error: Output differs from expected\n" >&2
-		diff -u "$expected_output_file" "$output_file" >&2
+		printf "Error: Output differs from expected\n\n%s: \$ %s\n" "$cmd_line" "$cmd" >&2
+		diff -u "$expected_output_file" "$output_file" | tail -n +3 >&2
 		exit 1
 	fi
 }
@@ -72,6 +72,7 @@ trap 'rm -f "$output_file" "$expected_output_file"' EXIT INT TERM
 
 cmd_build=''
 output_build=''
+cur_line=1
 
 while IFS= read -r line; do
 
@@ -86,6 +87,7 @@ while IFS= read -r line; do
 		fi
 		cmd_build=1
 		output_build=''
+		cmd_line="$cur_line"
 		cmd="${line#  $ }"
 
 	elif echo "$line" | grep -E '^  >' >/dev/null; then
@@ -120,6 +122,8 @@ while IFS= read -r line; do
 		output_build=''
 
 	fi
+
+	cur_line=$((cur_line + 1))
 
 done <"$1"
 
