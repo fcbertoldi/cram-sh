@@ -151,3 +151,5 @@ for test_file in "$@"; do
 
 	process_test_file "$test_file"
 done
+
+printf "\nAll tests passed.\n"
